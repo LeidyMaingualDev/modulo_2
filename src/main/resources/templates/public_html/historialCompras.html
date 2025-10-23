@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historial de Compras - CompraSoftw</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+  <div class="container py-5">
+    <h2 class="mb-4 text-center">Historial de Compras</h2>
+
+    <!-- Filtros -->
+    <form class="row g-3 mb-4" id="filtroForm" onsubmit="return false;">
+      <div class="col-md-6">
+        <label for="filtroEvento" class="form-label">Buscar por Evento</label>
+        <input
+          type="text"
+          class="form-control"
+          id="filtroEvento"
+          placeholder="Nombre del evento"
+          aria-label="Buscar por evento"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="filtroFecha" class="form-label">Filtrar por Fecha</label>
+        <input
+          type="date"
+          class="form-control"
+          id="filtroFecha"
+          aria-label="Filtrar por fecha"
+        />
+      </div>
+    </form>
+
+    <!-- Tabla Historial -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Nombre del Evento</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Localidad</th>
+            <th>Cantidad</th>
+            <th>Valor Total</th>
+            <th>Estado</th>
+            <th>Artista(s)</th>
+          </tr>
+        </thead>
+        <tbody id="tablaHistorial">
+          <!-- Aquí se insertarán las filas dinámicamente -->
+          <tr>
+            <td colspan="9" class="text-muted">No hay compras registradas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Simulación de datos - reemplazar con datos reales del backend
+    const compras = [
+      {
+        id: 1,
+        evento: "Festival de Jazz",
+        fecha: "2025-11-10",
+        hora: "19:00",
+        localidad: "VIP",
+        cantidad: 3,
+        valorTotal: 150000,
+        estado: "Exitosa",
+        artistas: ["Juan Pérez", "Ana Gómez"]
+      },
+      {
+        id: 2,
+        evento: "Concierto Rock",
+        fecha: "2025-11-12",
+        hora: "20:30",
+        localidad: "General",
+        cantidad: 2,
+        valorTotal: 80000,
+        estado: "Pendiente",
+        artistas: ["Los Riffs"]
+      },
+      // Más datos aquí...
+    ];
+
+    const tbody = document.getElementById('tablaHistorial');
+
+    // Función para formatear moneda local
+    function formatearMoneda(valor) {
+      return valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    }
+
+    // Renderizar tabla
+    function renderizarTabla(datos) {
+      tbody.innerHTML = '';
+      if (datos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-muted">No se encontraron registros que coincidan.</td></tr>`;
+        return;
+      }
+      datos.forEach(compra => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${compra.id}</td>
+          <td>${compra.evento}</td>
+          <td>${compra.fecha}</td>
+          <td>${compra.hora}</td>
+          <td>${compra.localidad}</td>
+          <td>${compra.cantidad}</td>
+          <td>${formatearMoneda(compra.valorTotal)}</td>
+          <td>${compra.estado}</td>
+          <td>${compra.artistas.join(', ')}</td>
+        `;
+        tbody.appendChild(fila);
+      });
+    }
+
+    // Filtrado dinámico
+    function filtrarTabla() {
+      const inputEvento = document.getElementById('filtroEvento').value.toLowerCase();
+      const inputFecha = document.getElementById('filtroFecha').value;
+
+      const filtrados = compras.filter(c => {
+        const coincideEvento = c.evento.toLowerCase().includes(inputEvento);
+        const coincideFecha = !inputFecha || c.fecha === inputFecha;
+        return coincideEvento && coincideFecha;
+      });
+
+      renderizarTabla(filtrados);
+    }
+
+    // Eventos de filtrado
+    document.getElementById('filtroEvento').addEventListener('input', filtrarTabla);
+    document.getElementById('filtroFecha').addEventListener('input', filtrarTabla);
+
+    // Render inicial
+    renderizarTabla(compras);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
