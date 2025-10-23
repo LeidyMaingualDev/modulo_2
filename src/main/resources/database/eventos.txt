@@ -1,0 +1,116 @@
+-- =========================================================
+-- SCRIPT DE CREACIÓN DE BASE DE DATOS: SISTEMA DE EVENTOS
+-- Generado a partir del arranque de Hibernate (Spring Boot)
+-- Fecha: 2025-10-22
+-- =========================================================
+
+CREATE DATABASE IF NOT EXISTS eventos_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE eventos_db;
+
+-- =========================================================
+-- TABLA: ARTISTA
+-- =========================================================
+CREATE TABLE artista (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    genero VARCHAR(30) NOT NULL,
+    ciudad VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- TABLA: MUNICIPIO
+-- =========================================================
+CREATE TABLE municipio (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    codigo VARCHAR(255) NOT NULL,
+    nombre VARCHAR(40) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (codigo)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- TABLA: LOCALIDAD
+-- =========================================================
+CREATE TABLE localidad (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    codigo VARCHAR(10) NOT NULL,
+    nombre_localidad TINYINT NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (codigo)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- TABLA: USUARIOS
+-- =========================================================
+CREATE TABLE usuarios (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(30),
+    apellido VARCHAR(30),
+    documento VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('ADMIN', 'COMP'),
+    telefono VARCHAR(20),
+    tipo_documento VARCHAR(255),
+    PRIMARY KEY (id),
+    UNIQUE (documento),
+    UNIQUE (email)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- TABLA: EVENTO
+-- =========================================================
+CREATE TABLE evento (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(60) NOT NULL,
+    descripcion VARCHAR(400) NOT NULL,
+    fecha DATETIME(6) NOT NULL,
+    hora_inicio TIME(6) NOT NULL,
+    hora_fin TIME(6) NOT NULL,
+    actividad TINYINT NOT NULL,
+    id_artista BIGINT NOT NULL,
+    id_municipio BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT FK_evento_artista FOREIGN KEY (id_artista) REFERENCES artista (id),
+    CONSTRAINT FK_evento_municipio FOREIGN KEY (id_municipio) REFERENCES municipio (id)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- TABLA: BOLETERIA
+-- =========================================================
+CREATE TABLE boleteria (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    disponibilidad_boletas INT NOT NULL,
+    precio_boleta FLOAT(23) NOT NULL,
+    id_evento BIGINT NOT NULL,
+    id_localidad BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT FK_boleteria_evento FOREIGN KEY (id_evento) REFERENCES evento (id),
+    CONSTRAINT FK_boleteria_localidad FOREIGN KEY (id_localidad) REFERENCES localidad (id)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- TABLA: COMPRAS
+-- =========================================================
+CREATE TABLE compras (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    cantidad_boletas INT NOT NULL,
+    estado_transaccion ENUM('CANCELADA','EXITOSA','PENDIENTE'),
+    fecha DATETIME(6) NOT NULL,
+    hora TIME(6) NOT NULL,
+    metodo_pago ENUM('EFECTIVO','TARGETA','TRANSFERENCIA'),
+    valor_total INT NOT NULL,
+    id_evento BIGINT NOT NULL,
+    id_localidad BIGINT NOT NULL,
+    id_usuario BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT FK_compra_evento FOREIGN KEY (id_evento) REFERENCES evento (id),
+    CONSTRAINT FK_compra_localidad FOREIGN KEY (id_localidad) REFERENCES localidad (id),
+    CONSTRAINT FK_compra_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios (id)
+) ENGINE=InnoDB;
+
+-- =========================================================
+-- FIN DEL SCRIPT
+-- =========================================================
