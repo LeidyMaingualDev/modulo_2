@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Disponibilidad de Eventos - CompraSoftw</title>
+
+  <!-- Bootstrap y estilos -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .page-header {
+      text-align: center;
+      margin: 40px 0 20px;
+    }
+
+    .filtros {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .evento-card {
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid #ddd;
+    }
+
+    .evento-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .evento-card.seleccionado {
+      border: 2px solid #0d6efd;
+      box-shadow: 0 0 10px rgba(13,110,253,0.5);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .btn-comprar {
+      width: 100%;
+      margin-top: 30px;
+    }
+
+    .no-resultados {
+      text-align: center;
+      color: #888;
+      margin-top: 40px;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1 class="fw-bold">
+        <i class=" text-primary"></i> Disponibilidad de Eventos
+      </h1>
+      <p class="text-muted">Busca y selecciona el evento que más te interese para comprar tus entradas.</p>
+    </div>
+
+    <!-- 🔍 FILTROS -->
+    <div class="filtros">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+          <label for="filtroNombre" class="form-label fw-semibold">Buscar por nombre</label>
+          <input type="text" id="filtroNombre" class="form-control" placeholder="Ejemplo: concierto, festival..." />
+        </div>
+        <div class="col-md-4">
+          <label for="filtroFecha" class="form-label fw-semibold">Filtrar por fecha</label>
+          <input type="date" id="filtroFecha" class="form-control" />
+        </div>
+        <div class="col-md-2 d-grid">
+          <button id="btnLimpiarFiltros" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle"></i> Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!--  TARJETAS DE EVENTOS -->
+    <div class="row" id="contenedorEventos"></div>
+    <div id="noResultados" class="no-resultados" style="display: none;">
+      <i class="bi bi-emoji-frown"></i> No se encontraron eventos con esos filtros.
+    </div>
+
+    <!-- 🛒 BOTÓN COMPRAR -->
+    <div class="text-center">
+      <button type="button" id="btnComprar" class="btn btn-primary btn-lg btn-comprar" disabled>
+       Comprar Boleta
+      </button>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const eventos = [
+      {
+        id: 1,
+        fecha: "2025-11-10",
+        municipio: "Ciudad A",
+        nombre: "Concierto Rock",
+        descripcion: "Vive una noche llena de energía con las mejores bandas de rock del país.",
+        artista: "Banda X",
+        horarios: "20:00 - 23:00",
+        boletasDisponibles: 120
+      },
+      {
+        id: 2,
+        fecha: "2025-11-15",
+        municipio: "Ciudad B",
+        nombre: "Festival de Jazz",
+        descripcion: "Una experiencia única con los mejores exponentes del jazz contemporáneo.",
+        artista: "Jazz Band",
+        horarios: "18:00 - 22:00",
+        boletasDisponibles: 50
+      },
+      {
+        id: 3,
+        fecha: "2025-12-01",
+        municipio: "Ciudad C",
+        nombre: "Evento Cultural",
+        descripcion: "Disfruta de las tradiciones, arte y cultura local en un evento para toda la familia.",
+        artista: "Artistas locales",
+        horarios: "10:00 - 17:00",
+        boletasDisponibles: 200
+      }
+    ];
+
+    const contenedor = document.getElementById("contenedorEventos");
+    const filtroNombre = document.getElementById("filtroNombre");
+    const filtroFecha = document.getElementById("filtroFecha");
+    const btnLimpiarFiltros = document.getElementById("btnLimpiarFiltros");
+    const noResultados = document.getElementById("noResultados");
+    const btnComprar = document.getElementById("btnComprar");
+
+    let eventoSeleccionado = null;
+
+    function renderizarEventos(lista) {
+      contenedor.innerHTML = "";
+      if (lista.length === 0) {
+        noResultados.style.display = "block";
+        return;
+      }
+      noResultados.style.display = "none";
+
+      lista.forEach(evento => {
+        const col = document.createElement("div");
+        col.classList.add("col-md-4", "mb-4");
+
+        col.innerHTML = `
+          <div class="card evento-card" data-id="${evento.id}">
+            <div class="card-body">
+              <h5 class="card-title text-primary">${evento.nombre}</h5>
+              <p class="card-text text-muted mb-1"><i class="bi bi-geo-alt-fill"></i> ${evento.municipio}</p>
+              <p class="card-text small mb-2"><i class="bi bi-calendar-event"></i> ${evento.fecha} | <i class="bi bi-clock"></i> ${evento.horarios}</p>
+              <p class="card-text">${evento.descripcion}</p>
+              <span class="badge bg-success">Disponibles: ${evento.boletasDisponibles}</span>
+            </div>
+            <div class="card-footer text-end text-muted small">
+              <i class="bi bi-person-music"></i> ${evento.artista}
+            </div>
+          </div>
+        `;
+
+        const card = col.querySelector(".evento-card");
+        card.addEventListener("click", function () {
+          document.querySelectorAll(".evento-card").forEach(c => c.classList.remove("seleccionado"));
+          this.classList.add("seleccionado");
+          eventoSeleccionado = evento;
+          btnComprar.disabled = false;
+        });
+
+        contenedor.appendChild(col);
+      });
+    }
+
+    // 🔍 Filtrar eventos
+    function aplicarFiltros() {
+      const nombreFiltro = filtroNombre.value.toLowerCase().trim();
+      const fechaFiltro = filtroFecha.value;
+
+      const filtrados = eventos.filter(ev => {
+        const coincideNombre = ev.nombre.toLowerCase().includes(nombreFiltro);
+        const coincideFecha = fechaFiltro ? ev.fecha === fechaFiltro : true;
+        return coincideNombre && coincideFecha;
+      });
+
+      renderizarEventos(filtrados);
+    }
+
+    // Limpiar filtros
+    btnLimpiarFiltros.addEventListener("click", () => {
+      filtroNombre.value = "";
+      filtroFecha.value = "";
+      aplicarFiltros();
+    });
+
+    filtroNombre.addEventListener("input", aplicarFiltros);
+    filtroFecha.addEventListener("change", aplicarFiltros);
+
+    // Comprar
+    btnComprar.addEventListener("click", () => {
+      if (!eventoSeleccionado) {
+        alert("Por favor selecciona un evento.");
+        return;
+      }
+      alert(`Has seleccionado comprar boleta para:\${eventoSeleccionado.nombre}\${eventoSeleccionado.fecha}\n🎤 ${eventoSeleccionado.artista}`);
+      // Aquí podrías redirigir a: window.location.href = `compra.html?id=${eventoSeleccionado.id}`;
+    });
+
+    // Cargar al inicio
+    renderizarEventos(eventos);
+  </script>
+</body>
+</html>
