@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registrar Localidad - CompraSoftw</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title mb-4 text-center">Registrar Localidad</h3>
+            <form id="localidadForm" method="POST" action="" novalidate>
+              <div class="mb-3">
+                <label for="codigoLocalidad" class="form-label">Código de Localidad</label>
+                <input
+                  type="text"
+                  id="codigoLocalidad"
+                  name="codigoLocalidad"
+                  class="form-control"
+                  placeholder="Código único de localidad"
+                  required
+                  pattern="^[A-Za-z0-9_-]+$"
+                  maxlength="10"
+                />
+                <div class="invalid-feedback">
+                  Por favor ingresa un código válido (letras, números, guiones, sin espacios).
+                </div>
+                <small class="form-text text-muted">El código debe ser único y no contener espacios.</small>
+              </div>
+
+              <div class="mb-3">
+                <label for="nombreLocalidad" class="form-label">Nombre de la Localidad</label>
+                <input
+                  type="text"
+                  id="nombreLocalidad"
+                  name="nombreLocalidad"
+                  class="form-control"
+                  placeholder="Ejemplo: Prefencial, VIP, General"
+                  required
+                  minlength="2"
+                  maxlength="50"
+                />
+                <div class="invalid-feedback">
+                  Por favor ingresa un nombre válido para la localidad.
+                </div>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Guardar Localidad</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  (() => {
+    const form = document.getElementById('localidadForm');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      // Obtener datos del formulario
+      const data = {
+        codigo: document.getElementById('codigoLocalidad').value,
+        nombreLocalidad: document.getElementById('nombreLocalidad').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:8080/api/localidad', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          alert('Localidad registrada exitosamente');
+          form.reset();
+          form.classList.remove('was-validated');
+        } else {
+          const error = await response.text();
+          alert('Error al registrar la localidad: ' + error);
+        }
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+        alert('Error al conectar con el servidor');
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
