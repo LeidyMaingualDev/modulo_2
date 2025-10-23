@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrarse - CompraSoftw</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title text-center mb-4">Registro de Usuario</h3>
+            <form id="registerForm" method="POST" action="" novalidate>
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombres</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nombre"
+                  name="nombre"
+                  placeholder="Ejemplo: Juan Carlos"
+                  required
+                  minlength="2"
+                />
+                <div class="invalid-feedback">Por favor ingresa tus nombres completos.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="apellido" class="form-label">Apellidos</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apellido"
+                  name="apellido"
+                  placeholder="Ejemplo: Pérez Gómez"
+                  required
+                  minlength="2"
+                />
+                <div class="invalid-feedback">Por favor ingresa tus apellidos completos.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="tipo_documento" class="form-label">Tipo de Documento</label>
+                <select class="form-select" id="tipo_documento" name="tipo_documento" required>
+                  <option value="" disabled selected>Selecciona un tipo</option>
+                  <option value="CC">Cédula de Ciudadanía</option>
+                  <option value="TI">Tarjeta de Identidad</option>
+                  <option value="CE">Cédula de Extranjería</option>
+                  <option value="PA">Pasaporte</option>
+                </select>
+                <div class="invalid-feedback">Selecciona un tipo de documento válido.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="documento" class="form-label">Número de Documento</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="documento"
+                  name="documento"
+                  required
+                  pattern="^[0-9]+$"
+                  placeholder="Sólo números"
+                />
+                <div class="invalid-feedback">Ingresa un número de documento válido (solo números).</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  placeholder="ejemplo@correo.com"
+                  required
+                />
+                <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  required
+                  minlength="6"
+                  placeholder="Mínimo 6 caracteres"
+                />
+                <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono (opcional)</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="telefono"
+                  name="telefono"
+                  pattern="^\+?\d{7,15}$"
+                  placeholder="+57 300 000 0000"
+                />
+                <div class="invalid-feedback">Ingresa un número de teléfono válido.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="rol" class="form-label">Rol</label>
+                <select class="form-select" id="rol" name="rol" required>
+                  <option value="" disabled selected>Selecciona un rol</option>
+                  <option value="ADMIN">Administrador</option>
+                  <option value="COMP">Comprador</option>
+                </select>
+                <div class="invalid-feedback">Selecciona un rol.</div>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+              </div>
+            </form>
+
+            <p class="text-center mt-3">
+              ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const form = document.getElementById("registerForm");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Validar formulario con Bootstrap
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+      return;
+    }
+
+    // Crear el objeto con los datos del formulario
+    const formData = {
+      nombre: document.getElementById("nombre").value.trim(),
+      apellido: document.getElementById("apellido").value.trim(),
+      tipo_documento: document.getElementById("tipo_documento").value,
+      documento: document.getElementById("documento").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      password: document.getElementById("password").value,
+      telefono: document.getElementById("telefono").value.trim(),
+      rol: document.getElementById("rol").value
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Error al registrar el usuario";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (err) {}
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      alert("Usuario registrado correctamente: " + (data.nombre || '') + " " + (data.apellido || ''));
+
+      window.location.href = "login.html";
+
+    } catch (error) {
+      alert("Error: " + error.message);
+    }
+  });
+</script>
+
+</body>
+</html>
