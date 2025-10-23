@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mi Cuenta</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="mb-4">Mi Cuenta</h2>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Información Personal</h5>
+        <form id="formCuenta">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="Juan" disabled />
+          </div>
+          <div class="mb-3">
+            <label for="apellido" class="form-label">Apellido</label>
+            <input type="text" class="form-control" id="apellido" name="apellido" value="Pérez" disabled />
+          </div>
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="correo" name="correo" value="juan@example.com" disabled />
+          </div>
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" class="form-control" id="telefono" name="telefono" value="3001234567" disabled />
+          </div>
+
+          <button type="button" id="btnEditar" class="btn btn-primary">Editar Información</button>
+          <button type="submit" id="btnGuardar" class="btn btn-success" style="display:none;">Guardar Cambios</button>
+          <button type="button" id="btnCancelar" class="btn btn-secondary" style="display:none;">Cancelar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const btnEditar = document.getElementById('btnEditar');
+    const btnGuardar = document.getElementById('btnGuardar');
+    const btnCancelar = document.getElementById('btnCancelar');
+    const form = document.getElementById('formCuenta');
+    const inputs = form.querySelectorAll('input');
+
+    btnEditar.addEventListener('click', () => {
+      inputs.forEach(input => input.disabled = false);
+      btnEditar.style.display = 'none';
+      btnGuardar.style.display = 'inline-block';
+      btnCancelar.style.display = 'inline-block';
+    });
+
+    btnCancelar.addEventListener('click', () => {
+      // Reset form values to original (you can improve by storing original values)
+      form.reset();
+
+      inputs.forEach(input => input.disabled = true);
+      btnEditar.style.display = 'inline-block';
+      btnGuardar.style.display = 'none';
+      btnCancelar.style.display = 'none';
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Aquí puedes manejar el guardado, por ejemplo enviar a backend
+
+      // Luego bloquear campos y ajustar botones
+      inputs.forEach(input => input.disabled = true);
+      btnEditar.style.display = 'inline-block';
+      btnGuardar.style.display = 'none';
+      btnCancelar.style.display = 'none';
+
+      alert('Cambios guardados correctamente');
+    });
+  </script>
+</body>
+</html>
