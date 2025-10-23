@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar Boleta</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="assets/css/main.css" rel="stylesheet" />
+  <style>
+    .form-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2 class="mb-4 text-center">Registrar Boleta</h2>
+    <form action="" method="POST" novalidate>
+      <div class="mb-3">
+        <label for="evento" class="form-label">Evento</label>
+        <input
+          type="text"
+          list="eventos"
+          id="evento"
+          name="evento"
+          class="form-control"
+          placeholder="Selecciona o escribe el evento"
+          required
+        />
+        <datalist id="eventos">
+          <option value="Conciertos"></option>
+          <option value="Muestras Culturales"></option>
+          <option value="Eventos Artísticos"></option>
+        </datalist>
+      </div>
+
+      <div class="mb-3">
+        <label for="localidad" class="form-label">Localidad</label>
+        <input
+          type="text"
+          list="localidades"
+          id="localidad"
+          name="localidad"
+          class="form-control"
+          placeholder="Selecciona o escribe la localidad"
+          required
+        />
+        <datalist id="localidades">
+          <option value="VIP"></option>
+          <option value="Preferencial"></option>
+          <option value="General"></option>
+        </datalist>
+      </div>
+
+      <div class="mb-3">
+        <label for="precio" class="form-label">Precio Boleta</label>
+        <input
+          type="number"
+          id="precio"
+          name="precio"
+          class="form-control"
+          placeholder="Ej: 150.00"
+          min="0"
+          step="0.01"
+          required
+        />
+        <small class="form-text text-muted">Ingrese el precio en moneda local.</small>
+      </div>
+
+      <div class="mb-3">
+        <label for="disponibilidad" class="form-label">Disponibilidad de Boletas</label>
+        <input
+          type="number"
+          id="disponibilidad"
+          name="disponibilidad"
+          class="form-control"
+          placeholder="Ej: 100"
+          min="0"
+          step="1"
+          required
+        />
+        <small class="form-text text-muted">Cantidad de boletas disponibles.</small>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Guardar Boleta</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+document.querySelector("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = {
+    evento: { id: parseInt(document.getElementById("evento").value) },
+    localidad: { id: parseInt(document.getElementById("localidad").value) },
+    precioBoleta: parseFloat(document.getElementById("precio").value),
+    disponibilidadBoletas: parseInt(document.getElementById("disponibilidad").value)
+  };
+
+  const response = await fetch("http://localhost:8080/api/boleteria", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (response.ok) {
+    alert("Boleta registrada correctamente");
+  } else {
+    alert("Error al registrar la boleta");
+  }
+});
+</script>
+
+</body>
+</html>
