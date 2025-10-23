@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Registrar tu Evento</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="formbold-main-wrapper">
+    <!-- Formulario Registro Evento -->
+    <form action="" method="POST" novalidate>
+      <div class="formbold-form-title">
+        <h2>Registrar Evento</h2>
+      </div>
+
+      <div class="formbold-input-flex">
+        <div>
+          <label for="nombre" class="formbold-form-label">Nombre</label>
+          <input
+            type="text"
+            name="nombre"
+            id="nombre"
+            class="formbold-form-input"
+            required
+            placeholder="Nombre del evento"
+          />
+        </div>
+        <div>
+          <label for="fecha" class="formbold-form-label">Fecha</label>
+          <input
+            type="date"
+            id="fecha"
+            name="fecha"
+            class="formbold-form-input"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="formbold-input-flex">
+        <div>
+          <label for="municipio" class="formbold-form-label">Municipio</label>
+          <input
+            type="text"
+            id="municipio"
+            name="municipio"
+            class="formbold-form-input"
+            required
+            placeholder="Municipio donde se realiza el evento"
+          />
+        </div>
+        <div>
+          <label for="artista" class="formbold-form-label">Artista</label>
+          <input
+            type="text"
+            id="artista"
+            name="artista"
+            class="formbold-form-input"
+            required
+            placeholder="Nombre del artista"
+          />
+        </div>
+      </div>
+
+      <div class="formbold-mb-3">
+        <label for="descripcion" class="formbold-form-label">Descripción</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          class="formbold-form-input"
+          rows="3"
+          required
+          placeholder="Descripción del evento"
+        ></textarea>
+      </div>
+
+      <div class="formbold-input-flex">
+        <div>
+          <label for="horaInicio" class="formbold-form-label">Hora Inicio</label>
+          <input
+            type="time"
+            id="horaInicio"
+            name="horaInicio"
+            class="formbold-form-input"
+            required
+          />
+        </div>
+        <div>
+          <label for="horaFin" class="formbold-form-label">Hora Fin</label>
+          <input
+            type="time"
+            id="horaFin"
+            name="horaFin"
+            class="formbold-form-input"
+            required
+          />
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button type="submit" class="btn btn-primary">Guardar Evento</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        nombre: document.getElementById('nombre').value,
+        descripcion: document.getElementById('descripcion').value,
+        municipio: { id: parseInt(document.getElementById('municipio').value) },
+        artista: { id: parseInt(document.getElementById('artista').value) },
+        actividad: "CONCIERTO", // puedes cambiarlo según enum
+        fecha: document.getElementById('fecha').value,
+        horaInicio: document.getElementById('horaInicio').value + ":00",
+        horaFin: document.getElementById('horaFin').value + ":00"
+      };
+
+      try {
+        const response = await fetch('http://localhost:8080/api/eventos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          alert('Evento registrado correctamente');
+          form.reset();
+        } else {
+          const error = await response.text();
+          alert('Error al registrar el evento: ' + error);
+        }
+      } catch (error) {
+        console.error('Error al conectar con el backend:', error);
+        alert('No se pudo conectar con el servidor');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
